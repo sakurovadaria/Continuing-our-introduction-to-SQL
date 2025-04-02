@@ -1,5 +1,6 @@
-package Continuing.our.introduction.to.SQL.controller;
+package Continuing.our.introduction.to.SQL;
 
+import Continuing.our.introduction.to.SQL.controller.FacultyController;
 import Continuing.our.introduction.to.SQL.exception.FacultyNotFoundException;
 import Continuing.our.introduction.to.SQL.model.Faculty;
 import Continuing.our.introduction.to.SQL.service.FacultyService;

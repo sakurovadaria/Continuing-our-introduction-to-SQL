@@ -1,4 +1,4 @@
-package Continuing.our.introduction.to.SQL.controller;
+package Continuing.our.introduction.to.SQL;
 
 import Continuing.our.introduction.to.SQL.model.Student;
 import org.junit.jupiter.api.Test;

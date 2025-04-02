@@ -1,5 +1,6 @@
-package Continuing.our.introduction.to.SQL.controller;
+package Continuing.our.introduction.to.SQL;
 
+import Continuing.our.introduction.to.SQL.controller.StudentController;
 import Continuing.our.introduction.to.SQL.exception.StudentNotFoundException;
 import Continuing.our.introduction.to.SQL.model.Student;
 import Continuing.our.introduction.to.SQL.service.StudentService;
