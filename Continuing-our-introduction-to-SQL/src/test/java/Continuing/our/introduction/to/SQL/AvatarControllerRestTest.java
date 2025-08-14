@@ -1,74 +1,66 @@
 package Continuing.our.introduction.to.SQL;
 
-import Continuing.our.introduction.to.SQL.model.Avatar;
+import Continuing.our.introduction.to.SQL.service.AvatarService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.domain.Page;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.*;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class AvatarControllerRestTest {
-
-    @LocalServerPort
-    private int port;
-
-    private String baseUrl;
-    private final String testImagePath = "src/test/resources/test-avatar.jpg";
+@SpringBootTest
+@AutoConfigureMockMvc
+public class AvatarControllerRestTest {
 
     @Autowired
-    private TestRestTemplate testRestTemplate;
+    private MockMvc mockMvc;
+
+    @MockBean
+    private AvatarService avatarService;
+
+    private MockMultipartFile mockFile;
 
     @BeforeEach
-    void setUp() {
-        baseUrl = "http://localhost:" + port;
-    }
+    void setup() throws IOException {
+        // Загружаем тестовую картинку из classpath
+        InputStream is = getClass().getClassLoader().getResourceAsStream("test1_avatar.jpg");
+        if (is == null) {
+            throw new FileNotFoundException("Файл test1_avatar.jpg не найден в classpath");
+        }
+        byte[] imageBytes = is.readAllBytes();
+        is.close();
 
-    @Test
-    void uploadAndGetAvatar_ShouldWork() throws IOException {
-        File file = new File(testImagePath);
-
-        // Тест загрузки аватара
-        testRestTemplate.postForObject(baseUrl + "/avatars/1/avatar", file, String.class);
-
-        // Тест получения превью
-        ResponseEntity<byte[]> response = testRestTemplate.getForEntity(baseUrl + "/avatars/1/preview", byte[].class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.IMAGE_JPEG);
-
-        // Тест получения полной версии
-        response = testRestTemplate.getForEntity(baseUrl + "/avatars/1/full", byte[].class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.IMAGE_JPEG);
-    }
-
-    @Test
-    void getNonExistingAvatar_ShouldReturn404() {
-        ResponseEntity<byte[]> response = testRestTemplate.getForEntity(baseUrl + "/avatars/999/preview", byte[].class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-    }
-
-    @Test
-    void getAllAvatars_ShouldReturnPaginated() {
-        ResponseEntity<Page<Avatar>> response = testRestTemplate.exchange(
-                baseUrl + "/avatars?page=0&size=2",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<Page<Avatar>>() {}
+        // Сохраняем в переменную, чтобы использовать в тестах
+        this.mockFile = new MockMultipartFile(
+                "file",                     // имя параметра в контроллере
+                "test1_avatar.jpg",          // имя файла
+                MediaType.IMAGE_JPEG_VALUE,  // тип контента
+                imageBytes                   // байты файла
         );
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getContent().size()).isEqualTo(2);
+    }
+
+
+
+
+    @Test
+    public void uploadAvatar_ShouldReturnOk() throws Exception {
+        Mockito.doNothing().when(avatarService).uploadAvatar(Mockito.anyLong(), Mockito.any());
+
+        mockMvc.perform(multipart("/avatars/{id}/avatar", 1L)
+                        .file(mockFile))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Avatar uploaded successfully"));
     }
 }

@@ -1,6 +1,6 @@
 package Continuing.our.introduction.to.SQL.service;
 
-import Continuing.our.introduction.to.SQL.exception.StudentNotFoundException;
+import Continuing.our.introduction.to.SQL.exception.FacultyNotFoundException;
 import Continuing.our.introduction.to.SQL.model.Faculty;
 import Continuing.our.introduction.to.SQL.repository.FacultyRepository;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class FacultyServiceImpl implements FacultyService{
     @Override
     public Faculty getFaculty(Long id) {
         return facultyRepository.findById(id)
-                .orElseThrow(()-> new StudentNotFoundException("Факультет не найден"));
+                .orElseThrow(()-> new FacultyNotFoundException("Факультет не найден"));
     }
 
     @Override

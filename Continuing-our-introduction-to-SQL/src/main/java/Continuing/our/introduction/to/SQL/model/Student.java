@@ -11,7 +11,7 @@ import java.util.Objects;
 public class Student {
     @Id
     @GeneratedValue
-    private int id;
+    private long id;
 
     private int age;
     private String name;
@@ -31,11 +31,11 @@ public class Student {
         this.name = name;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

@@ -7,13 +7,13 @@ import Continuing.our.introduction.to.SQL.service.AvatarService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -22,8 +22,8 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AvatarController.class)
@@ -32,18 +32,18 @@ class AvatarControllerMvcTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
+    @MockBean
     private AvatarService avatarService;
 
-    private final String testImagePath = "src/test/resources/test-avatar.jpg";
+    private final String testImagePath = "src/test/resources/test1_avatar.jpg";
 
     @Test
     void uploadAvatar_ShouldReturnOk() throws Exception {
         MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "test-avatar.jpg",
+                "test1_avatar.jpg",
                 MediaType.IMAGE_JPEG_VALUE,
-                Files.readAllBytes(Path.of(testImagePath))
+                new ClassPathResource("test1_avatar.jpg").getInputStream()
         );
 
         mockMvc.perform(multipart("/avatars/1/avatar").file(file))
@@ -89,13 +89,13 @@ class AvatarControllerMvcTest {
     void uploadAvatarTest() throws Exception {
         MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "test-avatar.jpg",
+                "test1_avatar.jpg",
                 MediaType.IMAGE_JPEG_VALUE,
-                Files.readAllBytes(Path.of(testImagePath))
+                new ClassPathResource("test1_avatar.jpg").getInputStream()
         );
 
         mockMvc.perform(multipart("/avatars/1/avatar").file(file))
                 .andExpect(status().isOk())
-                .andExpect((ResultMatcher) content().string("Avatar uploaded successfully"));
+                .andExpect(content().string("Avatar uploaded successfully"));
     }
 }

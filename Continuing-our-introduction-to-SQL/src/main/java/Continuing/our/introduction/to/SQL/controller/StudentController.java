@@ -49,17 +49,17 @@ public class StudentController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/students/count")
+    @GetMapping("/count")
     public ResponseEntity<Long> countAllStudents() {
         return ResponseEntity.ok(studentService.countAllStudents());
     }
 
-    @GetMapping("/students/average-age")
+    @GetMapping("/average-age")
     public ResponseEntity<Double> getAverageAge() {
         return ResponseEntity.ok(studentService.averageAge());
     }
 
-    @GetMapping("/students/last-five")
+    @GetMapping("/last-five")
     public ResponseEntity<List<Student>> getLastFiveStudents() {
         return ResponseEntity.ok(studentService.getLastFiveStudents());
     }

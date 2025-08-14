@@ -15,6 +15,8 @@ public class Avatar {
 
     private String mediaType;
 
+    @Lob
+    @Column(name = "data")
     private byte[] data;
 
     @OneToOne
